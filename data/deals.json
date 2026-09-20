@@ -1,0 +1,343 @@
+{
+  "generatedAt": "2026-09-20T08:36:49.215Z",
+  "currency": "EUR",
+  "origin": "ATH",
+  "weekends": [
+    "2026-09-25",
+    "2026-10-02",
+    "2026-10-09",
+    "2026-10-16"
+  ],
+  "deals": [
+    {
+      "origin": "ATH",
+      "destination": "PFO",
+      "originName": "Athens",
+      "destinationName": "Paphos",
+      "weekendKey": "2026-10-16",
+      "outbound": {
+        "date": "2026-10-16",
+        "departureTime": "07:35",
+        "arrivalTime": "09:10",
+        "flightNumber": "FR335",
+        "price": 14.99
+      },
+      "inbound": {
+        "date": "2026-10-19",
+        "departureTime": "23:30",
+        "arrivalTime": "01:15",
+        "flightNumber": "FR326",
+        "price": 14.99
+      },
+      "totalPrice": 29.98
+    },
+    {
+      "origin": "ATH",
+      "destination": "PFO",
+      "originName": "Athens",
+      "destinationName": "Paphos",
+      "weekendKey": "2026-10-09",
+      "outbound": {
+        "date": "2026-10-09",
+        "departureTime": "23:25",
+        "arrivalTime": "01:05",
+        "flightNumber": "FR325",
+        "price": 20.99
+      },
+      "inbound": {
+        "date": "2026-10-12",
+        "departureTime": "23:30",
+        "arrivalTime": "01:15",
+        "flightNumber": "FR326",
+        "price": 14.99
+      },
+      "totalPrice": 35.98
+    },
+    {
+      "origin": "ATH",
+      "destination": "PFO",
+      "originName": "Athens",
+      "destinationName": "Paphos",
+      "weekendKey": "2026-10-02",
+      "outbound": {
+        "date": "2026-10-02",
+        "departureTime": "23:25",
+        "arrivalTime": "01:05",
+        "flightNumber": "FR325",
+        "price": 26.49
+      },
+      "inbound": {
+        "date": "2026-10-05",
+        "departureTime": "23:30",
+        "arrivalTime": "01:15",
+        "flightNumber": "FR326",
+        "price": 14.99
+      },
+      "totalPrice": 41.48
+    },
+    {
+      "origin": "ATH",
+      "destination": "CFU",
+      "originName": "Athens",
+      "destinationName": "Corfu",
+      "weekendKey": "2026-10-16",
+      "outbound": {
+        "date": "2026-10-16",
+        "departureTime": "07:25",
+        "arrivalTime": "08:30",
+        "flightNumber": "FR4298",
+        "price": 24.57
+      },
+      "inbound": {
+        "date": "2026-10-19",
+        "departureTime": "05:45",
+        "arrivalTime": "06:50",
+        "flightNumber": "FR4299",
+        "price": 20.76
+      },
+      "totalPrice": 45.33
+    },
+    {
+      "origin": "ATH",
+      "destination": "CFU",
+      "originName": "Athens",
+      "destinationName": "Corfu",
+      "weekendKey": "2026-10-09",
+      "outbound": {
+        "date": "2026-10-09",
+        "departureTime": "07:25",
+        "arrivalTime": "08:30",
+        "flightNumber": "FR4298",
+        "price": 33.89
+      },
+      "inbound": {
+        "date": "2026-10-12",
+        "departureTime": "05:45",
+        "arrivalTime": "06:50",
+        "flightNumber": "FR4299",
+        "price": 15
+      },
+      "totalPrice": 48.89
+    },
+    {
+      "origin": "ATH",
+      "destination": "CFU",
+      "originName": "Athens",
+      "destinationName": "Corfu",
+      "weekendKey": "2026-09-25",
+      "outbound": {
+        "date": "2026-09-25",
+        "departureTime": "07:25",
+        "arrivalTime": "08:30",
+        "flightNumber": "FR4298",
+        "price": 30.08
+      },
+      "inbound": {
+        "date": "2026-09-28",
+        "departureTime": "05:45",
+        "arrivalTime": "06:50",
+        "flightNumber": "FR4299",
+        "price": 25.13
+      },
+      "totalPrice": 55.21
+    },
+    {
+      "origin": "ATH",
+      "destination": "CFU",
+      "originName": "Athens",
+      "destinationName": "Corfu",
+      "weekendKey": "2026-10-02",
+      "outbound": {
+        "date": "2026-10-02",
+        "departureTime": "07:25",
+        "arrivalTime": "08:30",
+        "flightNumber": "FR4298",
+        "price": 25.7
+      },
+      "inbound": {
+        "date": "2026-10-05",
+        "departureTime": "05:45",
+        "arrivalTime": "06:50",
+        "flightNumber": "FR4299",
+        "price": 41.58
+      },
+      "totalPrice": 67.28
+    },
+    {
+      "origin": "ATH",
+      "destination": "PFO",
+      "originName": "Athens",
+      "destinationName": "Paphos",
+      "weekendKey": "2026-09-25",
+      "outbound": {
+        "date": "2026-09-25",
+        "departureTime": "23:25",
+        "arrivalTime": "01:05",
+        "flightNumber": "FR325",
+        "price": 48.99
+      },
+      "inbound": {
+        "date": "2026-09-28",
+        "departureTime": "23:30",
+        "arrivalTime": "01:15",
+        "flightNumber": "FR326",
+        "price": 25.62
+      },
+      "totalPrice": 74.61
+    },
+    {
+      "origin": "ATH",
+      "destination": "JTR",
+      "originName": "Athens",
+      "destinationName": "Santorini",
+      "weekendKey": "2026-10-16",
+      "outbound": {
+        "date": "2026-10-16",
+        "departureTime": "06:55",
+        "arrivalTime": "07:45",
+        "flightNumber": "FR1232",
+        "price": 21.99
+      },
+      "inbound": {
+        "date": "2026-10-19",
+        "departureTime": "19:55",
+        "arrivalTime": "20:45",
+        "flightNumber": "FR6923",
+        "price": 56.79
+      },
+      "totalPrice": 78.78
+    },
+    {
+      "origin": "ATH",
+      "destination": "BGY",
+      "originName": "Athens",
+      "destinationName": "Bergamo",
+      "weekendKey": "2026-10-09",
+      "outbound": {
+        "date": "2026-10-09",
+        "departureTime": "22:45",
+        "arrivalTime": "00:15",
+        "flightNumber": "FR1318",
+        "price": 68.99
+      },
+      "inbound": {
+        "date": "2026-10-12",
+        "departureTime": "06:30",
+        "arrivalTime": "09:55",
+        "flightNumber": "FR1319",
+        "price": 14.99
+      },
+      "totalPrice": 83.98
+    },
+    {
+      "origin": "ATH",
+      "destination": "MLA",
+      "originName": "Athens",
+      "destinationName": "Malta",
+      "weekendKey": "2026-10-16",
+      "outbound": {
+        "date": "2026-10-16",
+        "departureTime": "14:50",
+        "arrivalTime": "15:35",
+        "flightNumber": "FR6028",
+        "price": 41.32
+      },
+      "inbound": {
+        "date": "2026-10-19",
+        "departureTime": "15:30",
+        "arrivalTime": "18:10",
+        "flightNumber": "FR6029",
+        "price": 44.99
+      },
+      "totalPrice": 86.31
+    },
+    {
+      "origin": "ATH",
+      "destination": "KTW",
+      "originName": "Athens",
+      "destinationName": "Katowice",
+      "weekendKey": "2026-10-09",
+      "outbound": {
+        "date": "2026-10-09",
+        "departureTime": "11:25",
+        "arrivalTime": "12:55",
+        "flightNumber": "FR2614",
+        "price": 68.99
+      },
+      "inbound": {
+        "date": "2026-10-12",
+        "departureTime": "14:45",
+        "arrivalTime": "18:10",
+        "flightNumber": "FR2615",
+        "price": 19.99
+      },
+      "totalPrice": 88.98
+    },
+    {
+      "origin": "ATH",
+      "destination": "MLA",
+      "originName": "Athens",
+      "destinationName": "Malta",
+      "weekendKey": "2026-10-09",
+      "outbound": {
+        "date": "2026-10-09",
+        "departureTime": "14:50",
+        "arrivalTime": "15:35",
+        "flightNumber": "FR6028",
+        "price": 40.99
+      },
+      "inbound": {
+        "date": "2026-10-12",
+        "departureTime": "15:30",
+        "arrivalTime": "18:10",
+        "flightNumber": "FR6029",
+        "price": 48.42
+      },
+      "totalPrice": 89.41
+    },
+    {
+      "origin": "ATH",
+      "destination": "MLA",
+      "originName": "Athens",
+      "destinationName": "Malta",
+      "weekendKey": "2026-10-02",
+      "outbound": {
+        "date": "2026-10-02",
+        "departureTime": "14:50",
+        "arrivalTime": "15:35",
+        "flightNumber": "FR6028",
+        "price": 49.43
+      },
+      "inbound": {
+        "date": "2026-10-05",
+        "departureTime": "15:30",
+        "arrivalTime": "18:10",
+        "flightNumber": "FR6029",
+        "price": 41.99
+      },
+      "totalPrice": 91.42
+    },
+    {
+      "origin": "ATH",
+      "destination": "BGY",
+      "originName": "Athens",
+      "destinationName": "Bergamo",
+      "weekendKey": "2026-10-16",
+      "outbound": {
+        "date": "2026-10-16",
+        "departureTime": "22:45",
+        "arrivalTime": "00:15",
+        "flightNumber": "FR1318",
+        "price": 55.99
+      },
+      "inbound": {
+        "date": "2026-10-19",
+        "departureTime": "06:30",
+        "arrivalTime": "09:55",
+        "flightNumber": "FR1319",
+        "price": 37.99
+      },
+      "totalPrice": 93.98
+    }
+  ]
+}

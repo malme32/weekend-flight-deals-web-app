@@ -1,0 +1,215 @@
+:root {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-2: #273449;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-strong: #0ea5e9;
+  --border: #334155;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 1.5rem clamp(1rem, 4vw, 3rem) 3rem;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.site-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+}
+
+.site-header__tagline {
+  margin: 0;
+  color: var(--muted);
+}
+
+.site-header__meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  align-items: end;
+  margin: 1.75rem 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+select,
+input {
+  padding: 0.55rem 0.65rem;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+}
+
+select:focus-visible,
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.reset {
+  padding: 0.55rem 1rem;
+  background: var(--accent-strong);
+  color: #04222f;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reset:hover {
+  background: var(--accent);
+}
+
+.results h2 {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 1.15rem;
+}
+
+.results__count {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.deals {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.deal {
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.deal__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.deal__route {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.deal__arrow {
+  color: var(--muted);
+  margin: 0 0.35rem;
+}
+
+.deal__total {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.deal__cities,
+.deal__dates {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.deal__legs {
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.leg {
+  display: grid;
+  grid-template-columns: 3rem 6.5rem 1fr 5rem auto;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding-top: 0.3rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.9rem;
+}
+
+.leg__label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.leg__date,
+.leg__time,
+.leg__flight {
+  color: var(--muted);
+}
+
+.leg__price {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+}
+
+.site-footer {
+  margin-top: 2.5rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 480px) {
+  .leg {
+    grid-template-columns: 2.5rem 1fr auto;
+  }
+
+  .leg__flight {
+    grid-column: 2 / 3;
+  }
+
+  .leg__price {
+    text-align: right;
+  }
+}

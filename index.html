@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weekend Flight Deals &mdash; Ryanair from Athens</title>
+    <meta
+      name="description"
+      content="Cheap Ryanair round trips from Athens: out on Friday, back on Monday, total under EUR100."
+    />
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1>Weekend Flight Deals</h1>
+      <p class="site-header__tagline">
+        Ryanair round trips from <span id="origin-label">Athens (ATH)</span>, out Friday,
+        back Monday, total &le; &euro;100.
+      </p>
+      <p class="site-header__meta" id="data-meta" aria-live="polite"></p>
+    </header>
+
+    <main>
+      <form class="filters" id="filters" role="search" aria-label="Deal filters">
+        <div class="field">
+          <label for="origin">Origin</label>
+          <select id="origin" name="origin"></select>
+        </div>
+        <div class="field">
+          <label for="weekend">Weekend</label>
+          <select id="weekend" name="weekend"></select>
+        </div>
+        <div class="field">
+          <label for="max">Max total (EUR)</label>
+          <input id="max" name="max" type="number" min="0" step="1" inputmode="numeric" value="100" />
+        </div>
+        <div class="field">
+          <label for="q">Destination</label>
+          <input id="q" name="q" type="search" placeholder="City or airport code" autocomplete="off" />
+        </div>
+        <button type="reset" class="reset">Reset</button>
+      </form>
+
+      <section class="results" aria-labelledby="results-heading">
+        <h2 id="results-heading">Deals <span class="results__count" id="result-count"></span></h2>
+        <div id="results"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Prices are a snapshot of Ryanair&rsquo;s public fare-finder API and may be out of date.
+        Not affiliated with Ryanair.
+      </p>
+    </footer>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
