@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weekend flight deals (Ryanair)</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Weekend flight deals</h1>
+        <p class="sub">
+          Round trips searched live on the Ryanair Services API. Default: depart Friday, return Monday,
+          total up to &euro;100.
+        </p>
+      </header>
+
+      <form id="search">
+        <div class="grid">
+          <label>
+            From (IATA)
+            <input id="origin" name="origin" value="ATH" maxlength="3" autocapitalize="characters" required />
+          </label>
+          <label>
+            To (optional, IATA)
+            <input id="destination" name="destination" maxlength="3" autocapitalize="characters" placeholder="any" />
+          </label>
+          <label>
+            Max total (&euro;)
+            <input id="maxPrice" name="maxPrice" type="number" min="1" step="1" value="100" />
+          </label>
+        </div>
+
+        <div class="grid">
+          <label>
+            Outbound from
+            <input id="outboundFrom" name="outboundFrom" type="date" required />
+          </label>
+          <label>
+            Outbound to
+            <input id="outboundTo" name="outboundTo" type="date" required />
+          </label>
+          <label>
+            Outbound weekday
+            <select id="outboundWeekday" name="outboundWeekday"></select>
+          </label>
+        </div>
+
+        <div class="grid">
+          <label>
+            Inbound from
+            <input id="inboundFrom" name="inboundFrom" type="date" required />
+          </label>
+          <label>
+            Inbound to
+            <input id="inboundTo" name="inboundTo" type="date" required />
+          </label>
+          <label>
+            Inbound weekday
+            <select id="inboundWeekday" name="inboundWeekday"></select>
+          </label>
+        </div>
+
+        <button type="submit" id="submit">Search deals</button>
+      </form>
+
+      <p id="status" role="status"></p>
+      <div id="results"></div>
+      <p id="meta" class="meta"></p>
+
+      <footer>
+        Prices are indicative &ldquo;from&rdquo; fares, exclude bags/seats and may change. Verify on
+        ryanair.com before booking. Data source: Ryanair Services API (unofficial, undocumented).
+      </footer>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
