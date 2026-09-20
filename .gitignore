@@ -1,0 +1,4 @@
+.agent/
+.agent-company/
+node_modules/
+.DS_Store

@@ -1,0 +1,38 @@
+{
+  "project": "ryanair-weekend-flight-deals-web-app",
+  "repo": "https://github.com/malme32/weekend-flight-deals-web-app",
+  "baseBranch": "main",
+  "integrationBranch": "agent/weekend-flight-deals-web-app",
+  "branchOff": "main",
+  "criticalPath": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "R1", "D1"],
+  "acceptanceCriteria": [
+    "Only deals with outbound Friday, inbound following Monday, totalPrice <= 100 EUR are shown",
+    "Origin defaults to ATH and the origin selector changes results",
+    "Max-price filter (default 100) and destination search work; results sorted by total ascending",
+    "Filter state is encoded in the URL and restored on reload",
+    "Each deal shows route, city names, dates, times, flight numbers, per-leg and total EUR price",
+    "No runtime third-party network calls; only same-origin data/deals.json is fetched",
+    "node --test test/ passes on Node 18 and core/* modules are DOM-free",
+    "Site works when served statically from GitHub Pages using relative paths",
+    "README documents local run, tests and data refresh"
+  ],
+  "tasks": [
+    { "id": "T1", "title": "Repo scaffold and static skeleton", "owner": "Alice", "dependsOn": [], "acceptance": "index.html served by python3 -m http.server; src/ test/ .gitignore README exist; node --test test/ exits 0" },
+    { "id": "T2", "title": "core/weekend.js date logic + tests", "owner": "Alice", "dependsOn": ["T1"], "acceptance": "Computes upcoming Fri->Mon pairs from an injectable clock; Friday/Monday detection and month/year rollover tests pass" },
+    { "id": "T3", "title": "core/deals.js model + core/format.js + tests", "owner": "Alice", "dependsOn": ["T1"], "acceptance": "Normalises raw farfnd fare to Deal; totalPrice = outbound + inbound; EUR/date formatting pure and tested" },
+    { "id": "T4", "title": "core/filter.js filter+sort + URL state + tests", "owner": "Alice", "dependsOn": ["T2", "T3"], "acceptance": "Filters by origin/weekend/maxPrice/query; sorts by total asc; serialize/parse URL round-trips" },
+    { "id": "T5", "title": "scripts/fetch-deals.mjs snapshot generator", "owner": "Alice", "dependsOn": ["T3"], "acceptance": "Queries keyless farfnd v4 for next N weekends, applies Fri/Mon and <=100 rules, writes valid data/deals.json" },
+    { "id": "T6", "title": "index.html + ui/render.js + styles.css", "owner": "Alice", "dependsOn": ["T4"], "acceptance": "Deals render sorted by total with route/dates/times/flight numbers/prices; empty state; responsive" },
+    { "id": "T7", "title": "ui/filters.js + main.js wiring + URL state", "owner": "Alice", "dependsOn": ["T6"], "acceptance": "Changing filters updates results; URL reflects state on load and change (replaceState)" },
+    { "id": "T8", "title": "README + GitHub Pages enablement", "owner": "Alice", "dependsOn": ["T7"], "acceptance": "README documents run/test/refresh/host; Pages instructions present" },
+    { "id": "R1", "title": "Code review of PR(s)", "owner": "Reviewer (not Alice)", "dependsOn": ["T8"], "acceptance": "Independent review with actionable comments posted on the pull request" },
+    { "id": "D1", "title": "Deploy to GitHub Pages", "owner": "Operator", "dependsOn": ["R1"], "acceptance": "Page live at the GitHub Pages URL after explicit approval" }
+  ],
+  "openQuestions": [
+    "Confirm ATH as the default origin",
+    "Snapshot-only data vs live runtime refresh",
+    "Confirm EUR100 is the total round-trip price",
+    "Is Ryanair-only acceptable as the data source",
+    "English vs Greek UI"
+  ]
+}
