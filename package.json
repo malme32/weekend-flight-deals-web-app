@@ -1,0 +1,14 @@
+{
+  "name": "weekend-flight-deals",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Weekend flight-deals search page backed by the Ryanair Services API",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
