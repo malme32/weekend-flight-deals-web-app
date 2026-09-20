@@ -2,8 +2,11 @@
 
 Stage: **Analyse** (architect triage). No application code in this stage.
 Target repo: `malme32/weekend-flight-deals-web-app` (public, default branch `main`).
+`main` currently holds `f124c78` only (`.gitignore` + these docs); implementation
+starts from that commit.
 
-Revision: **r2** — incorporates reviewer findings (Rex, 2026-09-20). See §11.
+Revision: **r3** — incorporates reviewer findings (Rex, 2026-09-20) and a live
+pagination re-verification. See §11.
 
 ## 1. Goal & scope
 
@@ -36,13 +39,14 @@ Out of scope
 Verified on 2026-09-20 (this run):
 
 - `HTTP/2 200`, `content-type: application/json`, `access-control-allow-origin: *`.
-- `limit` max is **20** (`limit=21` → HTTP 400).
+- `limit=21`+ → HTTP 400, so the largest accepted `limit` value is 20 — but see the
+  pagination contract below: **`limit` must not be sent at all.**
 - `priceValueTo=100` filters the **round-trip total** server-side.
 - Sample for ATH, Fri 2026-09-25 → Mon 2026-09-28: `ATH→CFU €30.08 + €25.13 = €55.21`,
-  `ATH→PFO €48.99 + €25.62 = €74.61`; uncapped same window returned 10 fares,
-  capped (`priceValueTo=100`) returned 2.
-- Per-origin check for one Fri→Mon window (`priceValueTo=100`, `limit=20`):
-  ATH 2, SKG 1, RHO 1, CFU 1, KGS 3, HER/CHQ/ZTH 0 fares.
+  `ATH→PFO €48.99 + €25.62 = €74.61`; the same window returned **13** fares when
+  `limit` is omitted (10 when `limit=20` is sent), and **2** with `priceValueTo=100`.
+- Per-origin check for one Fri→Mon window (**no `limit`**, `priceValueTo=100`):
+  ATH 2, SKG 1, RHO 2, CFU 1, KGS 3, CHQ 1, HER/ZTH 0 fares.
 
 Relevant response shape (per fare): `outbound`/`inbound` each carry
 `departureAirport{iataCode,name,city}`, `arrivalAirport{...}`, `departureDate`,
@@ -51,24 +55,21 @@ The document root also carries `fares[]`, `size`, and `nextPage`.
 
 ### Pagination (`nextPage`) — verified behaviour
 
-- The response carries `nextPage`, but it is **not a reliable offset**: in every
-  probe (`limit=20`, full pages of 20) it stayed `1`, and the `offset`, `page`,
-  `pageIndex` and `pageSize` parameters were **ignored** (identical result sets).
-  `nextPage` may also be `null` (e.g. HER/CHQ with 0 fares).
-- Because the endpoint caps at **20 fares per query and cannot be reliably paged**,
-  truncation is possible for large origins. The generator must therefore:
-  1. read `nextPage` (and the full-page condition `size === limit`);
-  2. when a further page is indicated, **subdivide** the query so each result set
-     stays under the cap (v1: split the search by `outboundDepartureDate` within
-     the Fri→Mon window is not possible because the window is a single Friday, so
-     subdivision is by the configured origin set and by destination region when a
-     region parameter is available; otherwise record truncation);
-  3. **never silently drop fares** — set `"truncated": true` on the snapshot and
-     log a warning when a page cannot be exhausted.
-- Tests exercise both a single page (`nextPage: null`/`1`) and a multi-page
-  sequence via an offline fixture; the page-following loop stops when the next
-  page repeats or does not advance (guards against this endpoint's non-advancing
-  `nextPage`).
+- **Do not send `limit`.** Omitting `limit` returns the **complete** fare set for the
+  query with `nextPage: null` (verified: ATH one weekend 13 fares; DUB one weekend 70;
+  ATH whole-month range 148). Sending `limit=20` returns a *smaller, truncated* subset
+  and sets `nextPage: 1` (ATH 10 of 13; DUB 12 of 70).
+- When `limit` *is* present, `nextPage` is not a usable offset: `offset`, `page`,
+  `pageIndex` and `pageSize` are all ignored and the identical page is returned every
+  time, so a result set cannot be paged back to completeness. `nextPage` may also be
+  `null` (e.g. HER/ZTH with 0 fares).
+- **Contract:** the generator issues **one request per (origin, weekend) without a
+  `limit` parameter**, reads the whole `fares[]`, and treats a non-null `nextPage` as
+  a **hard error** (abort the snapshot build) rather than silently truncating. This is
+  what makes "anywhere Ryanair flies" true and removes the need for a truncation flag
+  or page-subdivision heuristics.
+- Tests exercise the complete-single-page payload (`nextPage: null`), the empty
+  `fares[]` case, and the non-null-`nextPage` abort via offline fixtures.
 
 ### Decision: snapshot, no runtime call
 
@@ -125,15 +126,16 @@ test/
   deals.test.js
   fetch-deals.test.js      # offline fixture tests (no network)
   fixtures/
-    farfnd-page-1.json
-    farfnd-page-2.json
+    farfnd-ATH-2026-09-25.json   # complete single response (nextPage: null)
+    farfnd-empty.json            # fares: []
+    farfnd-nextpage.json         # nextPage != null -> generator must abort
 README.md
 .gitignore
 ```
 
 Layering rule: `core/*` is pure and DOM-free (unit-testable under `node --test`);
 `ui/*` and `main.js` touch the DOM. `scripts/fetch-deals.mjs` keeps its pure
-helpers (normalise/page-follow/truncation) importable so tests never hit the network.
+helpers (normalise/validate-snapshot) importable so tests never hit the network.
 This mirrors the Pacman/GTA split.
 
 ### Deal model (`data/deals.json`)
@@ -146,9 +148,8 @@ Top-level `origins` records the configured origin set; each deal carries its own
   "generatedAt": "2026-09-20T00:00:00Z",
   "currency": "EUR",
   "defaultOrigin": "ATH",
-  "origins": ["ATH", "SKG", "RHO"],
+  "origins": ["ATH", "SKG", "RHO", "CFU"],
   "weekends": ["2026-09-25", "2026-10-02"],
-  "truncated": false,
   "deals": [
     {
       "origin": "ATH", "destination": "CFU",
@@ -194,6 +195,10 @@ English vs Greek UI. Neither blocks implementation.
   **populated from `origins` present in `data/deals.json`**, ATH preselected.
 - Filter bar: weekend select, max-price input (default 100), destination text search,
   "reset" link.
+- **Price semantics (single source of truth):** the snapshot is already capped at €100
+  server-side (`priceValueTo=100`) and re-checked in `core/deals.js` (`totalPrice ≤ 100`),
+  so the max-price input can only **lower** the cap; the default `100` means "no
+  additional restriction". The UI never raises the cap.
 - Results: cards/rows sorted by `totalPrice` asc showing route, dates, times, flight
   numbers, per-leg price and bold total. Empty state when no deal matches.
 - State in URL, e.g. `?origin=ATH&weekend=2026-09-25&max=100&q=corfu`, parsed on load
@@ -209,9 +214,9 @@ English vs Greek UI. Neither blocks implementation.
   non-Fri/Mon or >max.
 - `filter.test.js`: filter combinations, sort order, URL serialise/parse round trip.
 - `fetch-deals.test.js` (**offline fixture test, required**): drives the pure
-  generator helpers with fixture pages under `test/fixtures/`; **no network**. Covers
-  single page (`nextPage: null`/`1`), multi-page follow + de-duplication, and the
-  truncation flag when a page cannot be exhausted.
+  generator helpers against fixtures under `test/fixtures/`; **no network**. Covers the
+  complete single-page payload (`nextPage: null`), the empty `fares[]` snapshot, and
+  the abort when `nextPage != null` (no silent truncation).
 
 ## 9. Delivery plan (feeds Alice)
 
@@ -225,8 +230,8 @@ the small scope; otherwise one PR per task listed below.
 | T2 | `core/weekend.js` + tests | Alice | T1 | upcoming Fri/Mon pairs; boundary tests pass |
 | T3 | `core/deals.js` + `core/format.js` + tests | Alice | T1 | raw fare→Deal; total adds legs; EUR formatting |
 | T4 | `core/filter.js` + tests (origin/weekend/max/q, sort, URL round-trip) | Alice | T2,T3 | all filter tests pass |
-| T5 | `scripts/fetch-deals.mjs` → `data/deals.json`: loop configured **origins**, handle `nextPage`/truncation, offline fixture test | Alice | T3 | runs against live keyless API; loops `--origins`; no silent truncation; `fetch-deals.test.js` passes with no network |
-| T6 | `index.html` + `ui/render.js` + `styles.css` | Alice | T4 | deals render, sorted, empty state, responsive |
+| T5 | `scripts/fetch-deals.mjs` → `data/deals.json`: loop configured **origins**; **omit `limit`**, abort on non-null `nextPage`; offline fixture test | Alice | T3 | runs against live keyless API; loops `--origins`; one request per (origin, weekend) **without `limit`**; aborts rather than truncating; `fetch-deals.test.js` passes with no network |
+| T6 | `index.html` + `ui/render.js` + `styles.css` | Alice | T4 | deals render, sorted, with weekend/max-price/search controls, empty state, responsive |
 | T7 | `ui/filters.js` + `src/main.js` wiring + URL state; origin selector populated from snapshot and ATH preselected | Alice | T6 | filters change results; selector lists snapshot origins; URL reflects state on load/change |
 | T8 | README + GitHub Pages enablement instructions | Alice | T7 | README documents run/test/refresh/host; Pages instructions present |
 | R1 | Code review of PR(s), comments posted | **Rex** | T8 | independent review verdict + actionable comments on the PR |
@@ -237,7 +242,9 @@ Critical path: `T1 → T2 → T3 → T4 → T5 → T6 → T7 → T8 → R1 → D
 ## 10. Acceptance criteria (v1)
 
 1. Static page loads `data/deals.json` and renders only deals with outbound **Friday**,
-   inbound **following Monday**, and `totalPrice ≤ 100` EUR.
+   inbound **following Monday**, and `totalPrice ≤ 100` EUR. The snapshot is capped
+   server-side (`priceValueTo=100`) and re-checked in `core/deals.js`; the page filters
+   the same invariant (the max-price input can only lower it).
 2. Origin **defaults to ATH**; the origin selector offers exactly the origins present
    in the snapshot and **changing it changes the results** (requires T5 to snapshot
    more than ATH).
@@ -246,12 +253,16 @@ Critical path: `T1 → T2 → T3 → T4 → T5 → T6 → T7 → T8 → R1 → D
 5. Each deal shows route, city names, dates, times, flight numbers, per-leg and total price (EUR).
 6. **No runtime third-party network calls** — only same-origin `data/deals.json`.
 7. `node --test test/` passes on Node 18; `core/*` has no DOM references; the
-   fetch generator has an **offline fixture test** and does not silently truncate.
+   fetch generator omits `limit`, aborts on a non-null `nextPage`, and has an
+   **offline fixture test**.
 8. Site works when served statically from GitHub Pages (relative paths).
 9. README + AGENTS.md document local run, tests, and data refresh; CI runs on push/PR.
 10. `package.json` and `.github/workflows/ci.yml` match the gta/pacman house conventions.
 
-## 11. Review response (r2)
+## 11. Review response (r2/r3)
+
+Findings from Rex (2026-09-20) are addressed below; r3 additionally corrects the
+pagination premise after live re-verification.
 
 | Reviewer finding | Resolution |
 |---|---|
@@ -260,3 +271,6 @@ Critical path: `T1 → T2 → T3 → T4 → T5 → T6 → T7 → T8 → R1 → D
 | (3) move €100-total and ATH-default out of open questions | New §5 "Confirmed decisions" 1 and 3; removed from open questions. |
 | (4) offline fixture test + `nextPage` handling for `fetch-deals.mjs` | T5 acceptance + §2 pagination subsection + `test/fetch-deals.test.js` + fixtures. |
 | (5) name the R1 reviewer | R1 owner = **Rex**. |
+| (6) double €100 enforcement ambiguous | §7 "Price semantics (single source of truth)": snapshot capped server-side, `core/deals.js` re-checks, UI filter can only lower; AC#1 reworded. |
+| (7) minor: "currently empty" header; T6/T7 vs §7 mismatch | Header now references the current `main` contents; T6 acceptance lists the filter controls. |
+| (r3) prior text assumed a 20-fare cap + truncation flag | Live re-verification: omitting `limit` returns the complete set (`nextPage: null`); `limit=20` truncates and cannot be paged. Contract changed to **omit `limit`** and abort on a non-null `nextPage`; the `truncated` flag was removed. |

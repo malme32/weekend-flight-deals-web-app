@@ -4,7 +4,7 @@
   "baseBranch": "main",
   "integrationBranch": "agent/weekend-flight-deals-web-app",
   "branchOff": "main",
-  "revision": "r2",
+  "revision": "r3",
   "criticalPath": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "R1", "D1"],
   "decisions": {
     "defaultOrigin": "ATH",
@@ -14,17 +14,19 @@
     "dataMode": "snapshot-only (no runtime third-party calls)",
     "hosting": "GitHub Pages from main root",
     "ci": ".github/workflows/ci.yml runs npm test on push and PR (mirrors gta-shooter-web-app)",
-    "reviewer": "Rex"
+    "reviewer": "Rex",
+    "pagination": "one request per (origin, weekend) WITHOUT limit; abort the snapshot if nextPage != null (do not send limit)",
+    "maxTotalSourceOfTruth": "snapshot capped server-side (priceValueTo=100) and re-checked in core/deals.js; the UI max-price filter can only lower it"
   },
   "acceptanceCriteria": [
-    "Only deals with outbound Friday, inbound following Monday, totalPrice <= 100 EUR are shown",
+    "Only deals with outbound Friday, inbound following Monday, totalPrice <= 100 EUR are shown (snapshot capped server-side and re-checked in core/deals.js; the UI max-price filter can only lower the cap)",
     "Origin defaults to ATH; the origin selector offers exactly the origins present in the snapshot and changing it changes results",
     "Max-price filter (default 100) and destination search work; results sorted by total ascending",
     "Filter state is encoded in the URL and restored on reload",
     "Each deal shows route, city names, dates, times, flight numbers, per-leg and total EUR price",
     "No runtime third-party network calls; only same-origin data/deals.json is fetched",
     "node --test test/ passes on Node 18 and core/* modules are DOM-free",
-    "fetch-deals.mjs has an offline fixture test and handles nextPage without silently truncating results",
+    "fetch-deals.mjs omits limit, aborts on a non-null nextPage, and has an offline fixture test (complete page, empty fares, non-null nextPage abort)",
     "package.json and .github/workflows/ci.yml match the gta/pacman house conventions; CI runs on push and PR",
     "Site works when served statically from GitHub Pages using relative paths",
     "README and AGENTS.md document local run, tests and data refresh"
@@ -34,8 +36,8 @@
     { "id": "T2", "title": "core/weekend.js date logic + tests", "owner": "Alice", "dependsOn": ["T1"], "acceptance": "Computes upcoming Fri->Mon pairs from an injectable clock; Friday/Monday detection and month/year rollover tests pass" },
     { "id": "T3", "title": "core/deals.js model + core/format.js + tests", "owner": "Alice", "dependsOn": ["T1"], "acceptance": "Normalises raw farfnd fare to Deal; totalPrice = outbound + inbound; EUR/date formatting pure and tested" },
     { "id": "T4", "title": "core/filter.js filter+sort + URL state + tests", "owner": "Alice", "dependsOn": ["T2", "T3"], "acceptance": "Filters by origin/weekend/maxPrice/query; sorts by total asc; serialize/parse URL round-trips" },
-    { "id": "T5", "title": "scripts/fetch-deals.mjs multi-origin snapshot + nextPage handling + offline fixture test", "owner": "Alice", "dependsOn": ["T3"], "acceptance": "Loops the configured --origins set (default ATH,SKG,RHO,CFU) over the next N weekends; applies Fri/Mon and <=100 rules; reads nextPage and sets truncated=true plus a warning instead of silently dropping fares; pure helpers unit-tested offline under test/fetch-deals.test.js using test/fixtures/ with no network" },
-    { "id": "T6", "title": "index.html + ui/render.js + styles.css", "owner": "Alice", "dependsOn": ["T4"], "acceptance": "Deals render sorted by total with route/dates/times/flight numbers/prices; empty state; responsive" },
+    { "id": "T5", "title": "scripts/fetch-deals.mjs multi-origin snapshot + offline fixture test", "owner": "Alice", "dependsOn": ["T3"], "acceptance": "Loops the configured --origins set (default ATH,SKG,RHO,CFU) over the next N weekends; one request per (origin, weekend) WITHOUT limit; applies Fri/Mon and <=100 rules; aborts the snapshot if nextPage != null (no silent truncation); pure helpers unit-tested offline under test/fetch-deals.test.js using test/fixtures/ with no network" },
+    { "id": "T6", "title": "index.html + ui/render.js + styles.css", "owner": "Alice", "dependsOn": ["T4"], "acceptance": "Deals render sorted by total with route/dates/times/flight numbers/prices; weekend select, max-price filter and destination search controls present; empty state; responsive" },
     { "id": "T7", "title": "ui/filters.js + main.js wiring + URL state + data-driven origin selector", "owner": "Alice", "dependsOn": ["T6"], "acceptance": "Origin selector is populated from origins present in data/deals.json with ATH preselected; changing filters updates results; URL reflects state on load and change (replaceState)" },
     { "id": "T8", "title": "README + AGENTS.md + GitHub Pages enablement", "owner": "Alice", "dependsOn": ["T7"], "acceptance": "README documents run/test/refresh/host; AGENTS.md documents stack/layout/conventions/commands/DoD; Pages instructions present" },
     { "id": "R1", "title": "Code review of PR(s)", "owner": "Rex", "dependsOn": ["T8"], "acceptance": "Independent review (reviewer != implementer) with actionable comments posted on the pull request" },
